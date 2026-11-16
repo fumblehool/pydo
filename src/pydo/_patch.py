@@ -192,7 +192,9 @@ class Client(  # type: ignore
         return self._agent_inference_resource_root
 
 
-__all__ = ["Client"]
+from pydo.sandbox import Sandbox  # noqa: E402  (hand-written; see pydo/sandbox)
+
+__all__ = ["Client", "Sandbox"]
 
 
 def patch_sdk():

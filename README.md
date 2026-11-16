@@ -132,6 +132,31 @@ ID: 123457, NAME: my_prod_ssh_key, FINGERPRINT: eb:76:c7:2a:d3:3e:80:5d:ef:2e:ca
 
 **Note**: More working examples can be found [here](https://github.com/digitalocean/pydo/tree/main/examples).
 
+## **Sandboxes**
+
+Create a sandbox and run a command from `pydo.sandbox.Client`, the same kind of
+entry point as `pydo.inference.Client`. The token comes from the argument or
+from `DIGITALOCEAN_TOKEN`.
+
+```python
+import os
+from pydo.sandbox import Client
+
+client = Client(token=os.environ["DIGITALOCEAN_TOKEN"])
+sandbox = client.sandbox.create(size="s-1vcpu-1gb")
+result = sandbox.commands.run('echo "Hello from DigitalOcean!"')
+print(result.stdout)
+sandbox.kill()
+```
+
+`api_key` is an alias of `token`. `timeout` is seconds. A non-zero exit raises
+`CommandExitError` and still carries `stdout` and `stderr`. `envs`, `stdin`,
+and `background=True` raise, because the exec API cannot express them.
+
+Async: `from pydo.sandbox.aio import Client`, then `await client.sandbox.create()`.
+
+`Sandbox.create()` also works with no client, and reads `DIGITALOCEAN_TOKEN`.
+
 ## **AI & Inference**
 
 > Talk to models on DigitalOcean's
