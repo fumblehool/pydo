@@ -157,6 +157,30 @@ Async: `from pydo.sandbox.aio import Client`, then `await client.sandbox.create(
 
 `Sandbox.create()` also works with no client, and reads `DIGITALOCEAN_TOKEN`.
 
+`Sandbox.compat()` returns a factory with another SDK's method names. The
+sandbox still runs on DigitalOcean. Arguments this API cannot express raise
+`SandboxError`.
+
+```python
+from pydo import Sandbox
+
+sb = Sandbox.compat("e2b").create(template="base")
+print(sb.commands.run("echo hi").stdout)
+sb.kill()
+
+sb = Sandbox.compat("modal").create(name="pydo")
+proc = sb.exec("echo", "hi")
+print(proc.stdout.read())
+sb.terminate()
+```
+
+`proc` has already finished: `exec` waits for the command, then `stdout.read()`
+returns the captured output. A non-zero Modal `exec` sets `returncode` and does
+not raise. A non-zero E2B `commands.run` raises `CommandExitError`.
+
+The same classes are `pydo.sandbox.compat.e2b.Sandbox` and
+`pydo.sandbox.compat.modal.Sandbox`.
+
 ## **AI & Inference**
 
 > Talk to models on DigitalOcean's

@@ -133,6 +133,31 @@ class Sandbox:
         )
         return cls(http, session_id_from(payload))
 
+    @classmethod
+    def compat(cls, api: str):
+        """Return a factory whose methods match another sandbox SDK.
+
+        The machine is still a DigitalOcean session. ``api`` is ``"e2b"`` or
+        ``"modal"``.
+
+        ::
+
+            sb = Sandbox.compat("e2b").create(template="base")
+            sb.commands.run("echo hi")
+            sb.kill()
+
+            sb = Sandbox.compat("modal").create(name="pydo")
+            sb.exec("echo", "hi")
+            sb.terminate()
+
+        The same classes live at ``pydo.sandbox.compat.e2b.Sandbox`` and
+        ``pydo.sandbox.compat.modal.Sandbox``. Arguments DigitalOcean cannot
+        express raise :class:`SandboxError`.
+        """
+        from pydo.sandbox.compat import factory
+
+        return factory(api)
+
     def kill(self) -> bool:
         """Delete the session."""
         self._http.request("DELETE", self._path())
